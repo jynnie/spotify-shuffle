@@ -1,140 +1,136 @@
-@import url("https://fonts.googleapis.com/css2?family=Rubik&display=swap");
+:root {
+  --background: #0a0a0a;
+  --grey-light: #d9dadc;
+
+  --green-light: #1ed760;
+  --green: #1db954;
+  --green-dark: #1aa34a;
+
+  --fun-color: #9198e5;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--background);
+  height: 100%;
+  min-height: 100vh;
+}
+html::before {
+  content: "";
+
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+
+  background: linear-gradient(var(--fun-color) -10%, transparent 30%);
+  opacity: 0.8;
+}
 
 html,
 body {
   padding: 0;
   margin: 0;
-  font-family: "Rubik", sans-serif;
+  font-family: "Poppins", sans-serif;
+  font-size: 16px;
+  color: white;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  margin: 0;
+main {
+  margin: auto;
+  padding: 2rem;
+
+  max-width: 800px;
+  width: 100%;
 }
 
-.u-bold {
+.header {
+  margin-bottom: 2rem;
+}
+.header h1 {
+  margin-bottom: 1rem;
+}
+
+/*//* Utils-----------------------------#07cf7f*/
+
+.hide {
+  display: none;
+}
+
+.fontWeight-400 {
+  font-weight: 400;
+}
+.bold {
   font-weight: bold;
 }
 
-.center-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+/*//* Button----------------------------#07cf7f*/
 
-.center-column {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-#step1 {
-  width: 300px;
-}
-
-.title {
-  font-size: 40px;
-  margin: 20px 0;
-}
-
-.diversity-container {
-  margin: 20px 0;
-}
-
-.diversity-description {
-  max-width: 300px;
-  margin: 20px 0;
-}
-
-#less {
-  cursor: pointer;
-  font-size: 32px;
+button {
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  letter-spacing: 1px;
   text-align: center;
-  width: 20px;
-  padding: 4px 12px;
-  border: 1px solid black;
-  border-right: 0;
-  border-top-left-radius: 2px;
-  border-bottom-left-radius: 2px;
-}
-
-#diversity {
-  font-size: 32px;
-  text-align: center;
-  width: 50px;
-  padding: 4px 8px;
-  border: 1px solid black;
-}
-
-#more {
-  cursor: pointer;
-  font-size: 32px;
-  text-align: center;
-  width: 20px;
-  padding: 4px 12px;
-  border: 1px solid black;
-  border-left: 0;
-  border-top-right-radius: 2px;
-  border-bottom-right-radius: 2px;
-}
-
-.button {
-  font-family: "Rubik", sans-serif;
-  text-align: center;
-  margin: 10px auto;
-  display: block;
-}
-
-.button:focus {
-  outline: 0;
-}
-
-.button:active {
-  transform: translateY(2px);
-}
-
-.primary-button {
-  display: block;
-  text-decoration: none;
+  text-transform: uppercase;
   color: white;
-  background-color: #25d34e;
-  font-size: 24px;
-  padding: 10px 20px;
-  margin: 0 auto;
-  border: 0;
-  border-radius: 20px;
+
+  border: 2px solid transparent;
+  border-radius: 2rem;
+  padding: 0.4rem 2.4rem;
+
   cursor: pointer;
+  transition: background-color 0.4s, color 0.4s, border-color 0.4s;
 }
 
-.secondary-button {
-  background-color: #a9a9a9;
-  font-size: 24px;
-  padding: 10px 20px;
-  border: 0;
-  border-radius: 20px;
-  cursor: pointer;
+button {
+  background-color: transparent;
+  border-color: white;
+}
+button:hover {
+  background-color: white;
+  color: var(--background);
+}
+button:active,
+button:focus {
+  background-color: var(--grey-light);
+  border-color: var(--grey-light);
+  color: var(--background);
 }
 
-#working {
-  font-size: 24px;
+button.primary {
+  background-color: var(--green);
+  border-color: transparent;
+  color: white;
+}
+button.primary:hover {
+  background-color: var(--green-light);
+}
+button.primary:active,
+button.primary:focus {
+  background-color: var(--green-dark);
 }
 
-#error {
-  color: #ee2e31;
-  max-width: 280px;
-  text-align: center;
-  margin: auto;
+button.text {
+  font-size: 1rem;
+  color: var(--green);
+  background-color: transparent;
+  border-color: transparent;
+  padding: 0;
+}
+button.text:hover {
+  color: var(--green-light);
+}
+button.text:active,
+button.text:focus {
+  color: var(--green-dark);
 }
 
-#desc {
-  max-width: 280px;
-  text-align: center;
-  margin: auto;
-}
+/*//* Loader----------------------------#07cf7f*/
 
 .loader {
   margin-left: 10px;
@@ -153,13 +149,4 @@ h6 {
   100% {
     transform: rotate(360deg);
   }
-}
-
-#result {
-  color: black;
-  text-decoration: none;
-}
-
-.hide {
-  display: none;
 }

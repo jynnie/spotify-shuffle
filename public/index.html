@@ -1,68 +1,48 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Play whatever, ya know</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>Shuffle - True shuffle for Spotify</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,600;1,300;1,600&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" type="text/css" href="styles.css" />
   </head>
   <body>
-    <div class="center-column">
-      <h1 class="title">Play Whatever</h1>
+    <main>
+      <div class="header">
+        <h1>Shuffle <span class="fontWeight-400">for Spotify</span></h1>
+        <p>
+          True shuffle for your playlists. Pick a setting and let's mix it up.
+        </p>
+      </div>
+
       <div id="step1">
-        <div>
-          <h2 class="subtitle">What is this?</h2>
-          <p>
-            It's essentially an infinite playlist generator! Given some starter tracks, this tool
-            can be used to make countless new playlists for you to listen to.
-          </p>
-          <h2 class="subtitle">How do I use it?</h2>
-          <p>
-            First, make a Spotify playlist called play-whatever (must be that exact name). Next,
-            fill it with some of your absolute favorite songs. That's it! You're ready to go.
-          </p>
-          <h2 class="subtitle">How does it work?</h2>
-          <p>
-            The songs you put in play-whatever are used to find other songs you might like, and
-            they're put in a new playlist called whatever. After generating the whatever playlist,
-            it'll take you right to it, so you can get to listening. If you get tired of whatever,
-            you can come back here and generate a new playlist.
-          </p>
-        </div>
-        <button onclick="login()" class="primary-button button" id="login">
+        <button onclick="login()" class="primary" id="login">
           Log in with Spotify
         </button>
       </div>
+
       <div class="hide" id="step2">
-        <div class="diversity-container center-column">
-          <h2>Diversity</h2>
-          <div class="center-row">
-            <div onclick="less()" id="less">-</div>
-            <div id="diversity">1</div>
-            <div onclick="more()" id="more">+</div>
-          </div>
-          <p class="diversity-description">
-            <span class="u-bold">Diversity</span> is the number of tracks that will be used to seed
-            the resulting playlist. For a more uniform playlist, choose a low diversity. For a
-            highly varied playlist, choose a high diversity.
-          </p>
-        </div>
-        <button onclick="magic()" class="secondary-button button" id="magic">
-          Make the magic happen
-        </button>
+        <button onclick="magic()" id="magic">Make the magic happen</button>
         <div class="hide center-row" id="working">
           <span>Working...</span>
           <div class="loader"></div>
         </div>
         <div class="hide center-row" id="error"></div>
-        <a href="" target="_blank" class="hide secondary-button button" id="result">
+        <a href="" target="_blank" class="hide" id="result">
           See the results
         </a>
         <div class="hide center-row" id="desc"></div>
-        <button onclick="again()" class="hide secondary-button button" id="again">
-          Roll again
-        </button>
+        <button onclick="again()" class="hide" id="again">Roll again</button>
       </div>
-    </div>
+    </main>
   </body>
   <script src="index.js"></script>
 </html>
