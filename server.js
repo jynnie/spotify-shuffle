@@ -7,33 +7,38 @@ const cookieParser = require("cookie-parser");
 const axios = require("axios");
 const moment = require("moment-timezone");
 
-const clientId = process.env.CLIENT_ID;
-const clientSecret = process.env.CLIENT_SECRET;
-const redirect_uri = "https://play-whatever.appspot.com/callback";
-// const redirect_uri = "https://play-whatever.herokuapp.com/callback";
-// const redirect_uri = "http://localhost:5000/callback";
+const CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
+const CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
+const REDIRECT_URI = process.env.REDIRECT_URI;
+const STATE_KEY = "spotify_auth_state";
+const SCOPE =
+  "user-read-private user-read-email playlist-read-private playlist-modify-public playlist-modify-private";
 
-const app = express();
-
-app.use(cookieParser());
-app.use(session({ secret: "6969", resave: true, saveUninitialized: true }));
-app.use(express.static("public"));
+//* Helpers---------------------------#07cf7f
 
 /**
  * Generates a random string containing numbers and letters
  * @param  {number} length The length of the string
  * @return {string} The generated string
  */
-const generateRandomString = (length) => {
+function generateRandomString(length) {
   let text = "";
-  let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let possible =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
   for (let i = 0; i < length; i++) {
     text += possible.charAt(Math.floor(Math.random() * possible.length));
   }
   return text;
-};
-const stateKey = "spotify_auth_state";
+}
+
+//* App & Routes----------------------#07cf7f
+
+const app = express();
+
+app.use(cookieParser());
+app.use(session({ secret: "6969", resave: true, saveUninitialized: true }));
+app.use(express.static("public"));
 
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/public/index.html");
@@ -45,20 +50,17 @@ app.get("/whoami", (req, res) => {
 
 app.get("/login", (req, res) => {
   const state = generateRandomString(16);
-  res.cookie(stateKey, state);
+  res.cookie(STATE_KEY, state);
 
-  // your application requests authorization
-  const scope =
-    "user-read-private user-read-email playlist-read-private playlist-modify-public playlist-modify-private";
   res.redirect(
     "https://accounts.spotify.com/authorize?" +
       qs.stringify({
         response_type: "code",
-        client_id: clientId,
-        scope: scope,
-        redirect_uri: redirect_uri,
+        client_id: CLIENT_ID,
+        scope: SCOPE,
+        redirect_uri: REDIRECT_URI,
         state: state,
-      })
+      }),
   );
 });
 
@@ -68,46 +70,54 @@ app.get("/callback", async (req, res) => {
 
   const code = req.query.code || null;
   const state = req.query.state || null;
-  const storedState = req.cookies ? req.cookies[stateKey] : null;
+  const storedState = req.cookies ? req.cookies[STATE_KEY] : null;
 
   if (state === null || state !== storedState) {
     res.redirect(
       "/#" +
         qs.stringify({
           error: "state_mismatch",
-        })
+        }),
     );
   } else {
-    res.clearCookie(stateKey);
-    const test = await axios.post(
+    res.clearCookie(STATE_KEY);
+    const authTest = await axios.post(
       "https://accounts.spotify.com/api/token",
       qs.stringify({
         code: code,
-        redirect_uri: redirect_uri,
+        redirect_uri: REDIRECT_URI,
         grant_type: "authorization_code",
       }),
       {
         headers: {
-          Authorization: "Basic " + Buffer.from(clientId + ":" + clientSecret).toString("base64"),
+          Authorization:
+            "Basic " +
+            Buffer.from(CLIENT_ID + ":" + CLIENT_SECRET).toString("base64"),
           "Content-Type": "application/x-www-form-urlencoded",
         },
         responseType: "json",
-      }
+      },
     );
-    // TODO: error check here
-    const data = test.data;
-    req.session.accessToken = data.access_token;
-    req.session.refreshToken = data.refresh_token;
 
-    const me = await axios.get("https://api.spotify.com/v1/me", {
-      headers: { Authorization: "Bearer " + data.access_token },
-      responseType: "json",
-    });
-    req.session.userId = me.data.id;
+    if (authTest.status === 200) {
+      const data = authTest.data;
+      req.session.accessToken = data.access_token;
+      req.session.refreshToken = data.refresh_token;
 
+      const me = await axios.get("https://api.spotify.com/v1/me", {
+        headers: { Authorization: "Bearer " + data.access_token },
+        responseType: "json",
+      });
+      req.session.userId = me.data.id;
+    } else {
+      // TODO: Handle error here
+    }
     res.redirect("/");
   }
 });
+
+//* Shuffle---------------------------#07cf7f
+// TODO:
 
 const getPlaylists = async (accessToken) => {
   const response = await axios.get("https://api.spotify.com/v1/me/playlists", {
@@ -119,10 +129,13 @@ const getPlaylists = async (accessToken) => {
 
 const getPlaylistItems = async (accessToken, playlist) => {
   const playlistId = playlist.id;
-  const response = await axios.get(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
-    headers: { Authorization: "Bearer " + accessToken },
-    responseType: "json",
-  });
+  const response = await axios.get(
+    `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+    {
+      headers: { Authorization: "Bearer " + accessToken },
+      responseType: "json",
+    },
+  );
   return response.data.items;
 };
 
@@ -133,14 +146,17 @@ const getPlaylistItems = async (accessToken, playlist) => {
  */
 const getRecommendations = async (accessToken, seeds) => {
   const seedIds = seeds.map((el) => el.track.id);
-  const response = await axios.get(`https://api.spotify.com/v1/recommendations`, {
-    params: {
-      limit: 30,
-      seed_tracks: seedIds.join(","),
+  const response = await axios.get(
+    `https://api.spotify.com/v1/recommendations`,
+    {
+      params: {
+        limit: 30,
+        seed_tracks: seedIds.join(","),
+      },
+      headers: { Authorization: "Bearer " + accessToken },
+      responseType: "json",
     },
-    headers: { Authorization: "Bearer " + accessToken },
-    responseType: "json",
-  });
+  );
   return response.data;
 };
 
@@ -168,12 +184,14 @@ const makeWhatever = async (accessToken, userId, playlists, seeds, recs) => {
           "Content-Type": "application/json",
         },
         responseType: "json",
-      }
+      },
     );
     outputPlaylist = test.data;
   }
 
-  const time = moment().tz("America/Los_Angeles").format("M/D/YYYY, h:mm:ss A z");
+  const time = moment()
+    .tz("America/Los_Angeles")
+    .format("M/D/YYYY, h:mm:ss A z");
   const formattedSeeds = formatSeeds(seeds);
   const desc = `Mixed at ${time} | SEEDS: ${formattedSeeds}`;
   const details = await axios.put(
@@ -187,7 +205,7 @@ const makeWhatever = async (accessToken, userId, playlists, seeds, recs) => {
         "Content-Type": "application/json",
       },
       responseType: "json",
-    }
+    },
   );
 
   const trackUris = recs.map((el) => el.uri);
@@ -202,7 +220,7 @@ const makeWhatever = async (accessToken, userId, playlists, seeds, recs) => {
         "Content-Type": "application/json",
       },
       responseType: "json",
-    }
+    },
   );
 
   return {
@@ -225,8 +243,7 @@ app.get("/playlists/:diversity", async (req, res) => {
     if (!seedPlaylist) {
       res.send({
         success: false,
-        msg:
-          "Oops, couldn't find the play-whatever playlist. Be sure to make that first and fill it with some bangers!",
+        msg: "Oops, couldn't find the play-whatever playlist. Be sure to make that first and fill it with some bangers!",
       });
       return;
     }
@@ -238,9 +255,14 @@ app.get("/playlists/:diversity", async (req, res) => {
       req.session.userId,
       playlists,
       seeds,
-      recs.tracks
+      recs.tracks,
     );
-    res.send({ success: true, recs: "done?", url: whatever.url, desc: whatever.desc });
+    res.send({
+      success: true,
+      recs: "done?",
+      url: whatever.url,
+      desc: whatever.desc,
+    });
     return;
   }
   res.send({
@@ -249,5 +271,5 @@ app.get("/playlists/:diversity", async (req, res) => {
   });
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Listening on ${PORT}`));

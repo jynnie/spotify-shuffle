@@ -1,7 +1,7 @@
 {
-  "name": "play-whatever",
+  "name": "spotify-shuffle",
   "version": "0.1.0",
-  "description": "plays whatever",
+  "description": "True shuffle playlists",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -9,17 +9,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MFarejowicz/play-whatever.git"
+    "url": "git+https://github.com/jynnie/spotify-shuffle.git"
   },
   "keywords": [
-    "spotify"
+    "spotify",
+    "shuffle"
   ],
-  "author": "Matt Farejowicz",
+  "author": "Jessica 'jynnie' Tang",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/MFarejowicz/play-whatever/issues"
+    "url": "https://github.com/jynnie/spotify-shuffle/issues"
   },
-  "homepage": "https://github.com/MFarejowicz/play-whatever#readme",
+  "homepage": "https://github.com/jynnie/spotify-shuffle#readme",
   "dependencies": {
     "axios": "^0.19.2",
     "cookie-parser": "^1.4.5",
